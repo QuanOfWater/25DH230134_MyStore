@@ -1,31 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
+using System.ComponentModel.DataAnnotations;
 
 namespace _25DH230134_MyStore.Models.ViewModel
 {
+    //Hiển thị thông tin cá nhân và cập nhập ở trang "Thông tin tài khoản"
     public class ProfileVM
     {
-        [Required(ErrorMessage = "Họ tên không được để trống")]
-        [Display(Name = "Họ và Tên")]
+        //Chỉ hiển thị, controller không đọc giá trị này từ form
+        public string Username { get; set; }
+        [Required(ErrorMessage = "Vui lòng nhập họ tên")]
+        [StringLength(100, ErrorMessage = "Họ tên tối đa 100 ký tự")]
+        [Display(Name = "Họ tên")]
         public string CustomerName { get; set; }
-        [Required(ErrorMessage = "Số điện thoại không được để trống")]
+
+        [Required(ErrorMessage = "Vui lòng nhập số điện thoại")]
+        [RegularExpression(@"^0\d{9}$", ErrorMessage = "Số điện thoại gồm 10 chữ số, bắt đầu bằng 0")]
         [Display(Name = "Số điện thoại")]
-        [RegularExpression(@"^[0-9]{10}$", ErrorMessage = "Số điện thoại phải là 10 chữ số")]
         public string CustomerPhone { get; set; }
 
-        [Required(ErrorMessage = "Làm ơn, email nè nhập hộ tui nha!")]
-        [Display(Name = "Nhập email")]
-        [RegularExpression(@"^[a-zA-Z0-9._%+-]+@gmail\.com$", ErrorMessage = "Email phải có định dạng @gmail.com")]
-        [DataType(DataType.EmailAddress)]
+        [Required(ErrorMessage = "Vui lòng nhập email")]
+        [EmailAddress(ErrorMessage = "Email không đúng định dạng")]
+        [StringLength(100)]
+        [Display(Name = "Email")]
         public string CustomerEmail { get; set; }
-        [Required(ErrorMessage = "Rồi không nhập địa chỉ rồi sao giao hàng?")]
+
+        [Required(ErrorMessage = "Vui lòng nhập địa chỉ")]
+        [StringLength(255, ErrorMessage = "Địa chỉ tối đa 255 ký tự")]
         [Display(Name = "Địa chỉ")]
         public string CustomerAddress { get; set; }
-        [Required(ErrorMessage = "Buộc phải tên người dùng!")]
-        [Display(Name = "Tên đăng nhập")]
-        public string Username { get; set; }
     }
 }

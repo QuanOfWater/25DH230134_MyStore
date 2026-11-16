@@ -3,21 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace _25DH230134_MyStore.Models.ViewModel.GioHang
+namespace _25DH230134_MyStore.Models.ViewModel
 {
-    public class CartItem// Lưu thông tin mỗi mặt hàng có trong giỏ
+    //Lưu thông tin mỗi mặt hàng nằm trong giỏ
+    public class CartItem
     {
         public int ProductID { get; set; }
-        public string ProductImage { get; set; }
         public string ProductName { get; set; }
-        public string ProductDescription { get; set; }
-        //public string Category { get; set; }
-        public decimal UnitPrice { get; set; }
         public int Quantity { get; set; }
+        public decimal UnitPrice { get; set; }
+        public string ProductImage { get; set; }
+
+        //Tên danh mục của SP (gom nhóm giỏ hàng)
         public string Category { get; set; }
-        public decimal TotalPrice => UnitPrice * Quantity;
 
-
-
+        //Tổng giá cho mỗi SP
+        public decimal TotalPrice => Quantity * UnitPrice;
     }
 }

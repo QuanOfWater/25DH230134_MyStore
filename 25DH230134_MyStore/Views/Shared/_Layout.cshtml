@@ -195,7 +195,7 @@
                 <a href="@Url.Action("Index","Cart")">
                     <i class="fas fa-shopping-cart"></i>
                     @{
-                        var cart = Session["Cart"] as _25DH230134_MyStore.Models.ViewModel.GioHang.Cart;
+                        var cart = Session["Cart"] as _25DH230134_MyStore.Models.ViewModel.Cart;
                         var cartCount = (cart != null && cart.Items != null) ? cart.Items.Sum(x => x.Quantity) : 0;
                     }
                     <span class="cart-count">@cartCount</span>

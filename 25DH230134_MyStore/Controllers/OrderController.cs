@@ -1,6 +1,5 @@
 ﻿using _25DH230134_MyStore.Models;
-using _25DH230134_MyStore.Models.ViewModel.DatHang;
-using _25DH230134_MyStore.Models.ViewModel.GioHang;
+using _25DH230134_MyStore.Models.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity; // THÊM: để dùng Include("OrderDetails") trong OrderSuccess
@@ -47,14 +46,11 @@ namespace _25DH230134_MyStore.Controllers
             {
                 CartItems = cart, //Lấy danh sách các sản phẩm trong giỏ hàng
                 TotalAmount = cart.Sum(item => item.TotalPrice),//Tổng giá trị của các mặt hàng trong giỏ
-                OrderDate = DateTime.Now, //Mặc định lấy bằng thời điểm đặt hàng
+                CustomerName = customer.CustomerName,
+                CustomerPhone = customer.CustomerPhone,
                 ShippingAddress = customer.CustomerAddress,//Lấy địa chỉ mặc định từ bảng Customer
-                CustomerID = customer.CustomerID, //Lấy mã khách hàng từ bảng Customer
-                Username = customer.Username, //Lấy tên đăng nhập từ bảng customer
-                DeliveryMethod = "Giao hàng nhanh", // THÊM: chọn sẵn radio phương thức giao hàng (thay cho "checked" bị lỗi trong view)
-                PaymentMethod = "Tiền mặt" // THÊM: chọn sẵn radio phương thức thanh toán (thay cho "checked" bị lỗi trong view)
-
-
+                DeliveryMethod = "Giao hàng nhanh", // chọn sẵn radio phương thức giao hàng
+                PaymentMethod = "Tiền mặt" // chọn sẵn radio phương thức thanh toán
             };
 
             return View(model);

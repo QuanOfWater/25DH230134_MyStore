@@ -6,42 +6,46 @@ using System.ComponentModel.DataAnnotations;
 
 namespace _25DH230134_MyStore.Models.ViewModel
 {
-    public class RegisterVM //Lưu thông tin form đăng kí tài khoản khách hàng
+    //Lưu dữ liệu fomr đăng ký (gộp dữ liệu cùa User + Customer)
+    public class RegisterVM
     {
-        [Required(ErrorMessage = "Buộc phải tên người dùng!")]
+        [Required(ErrorMessage = "Vui lòng nhập tên đăng nhập")]
+        [RegularExpression(@"^[a-zA-Z0-9_]{4,30}$", ErrorMessage = "Tên đăng nhập 4–30 ký tự, chỉ gồm chữ không dấu, số và dấu _")]
         [Display(Name = "Tên đăng nhập")]
         public string Username { get; set; }
 
-        [Required(ErrorMessage = "Buộc phải nhập mật khẩu!")]
+        [Required(ErrorMessage = "Vui lòng nhập mật khẩu")]
+        [StringLength(50, MinimumLength = 6, ErrorMessage = "Mật khẩu từ 6 đến 50 ký tự")]
+        [RegularExpression(@"^\S+$", ErrorMessage = "Mật khẩu không được chứa khoảng trắng")]
         [DataType(DataType.Password)]
         [Display(Name = "Mật khẩu")]
         public string Password { get; set; }
 
-        [Required(ErrorMessage = "Phải nhập mật khẩu xác nhận!")]
+        [Required(ErrorMessage = "Vui lòng nhập lại mật khẩu")]
         [DataType(DataType.Password)]
-        [Compare("Password", ErrorMessage = "Hai mật khẩu không trùng!")]
-        [Display(Name = "Xác nhận mật khẩu")]
+        [Compare("Password", ErrorMessage = "Mật khẩu nhập lại không khớp")]
+        [Display(Name = "Nhập lại mật khẩu")]
         public string ConfirmPassword { get; set; }
 
-        [Required(ErrorMessage = "Bạn quên nhập tên rồi kìa")]
-        [Display(Name = "Họ và tên")]
+        [Required(ErrorMessage = "Vui lòng nhập họ tên")]
+        [StringLength(100, ErrorMessage = "Họ tên tối đa 100 ký tự")]
+        [Display(Name = "Họ tên")]
         public string CustomerName { get; set; }
 
-        [Required(ErrorMessage = "Ủa bạn ơi, số điện thoại đâu?")]
+        [Required(ErrorMessage = "Vui lòng nhập số điện thoại")]
+        [RegularExpression(@"^0\d{9}$", ErrorMessage = "Số điện thoại gồm 10 chữ số, bắt đầu bằng 0")]
         [Display(Name = "Số điện thoại")]
-        [RegularExpression(@"^[0-9]{10,12}$", ErrorMessage = "Số điện thoại 10-12 số")]
-        [DataType(DataType.PhoneNumber)]
         public string CustomerPhone { get; set; }
 
-        [Required(ErrorMessage = "Làm ơn, email nè nhập hộ tui nha!")]
-        [Display(Name = "Nhập email")]
-        [RegularExpression(@"^[a-zA-Z0-9._%+-]+@gmail\.com$", ErrorMessage = "Email phải có định dạng @gmail.com")]
-        [DataType(DataType.EmailAddress)]
+        [Required(ErrorMessage = "Vui lòng nhập email")]
+        [EmailAddress(ErrorMessage = "Email không đúng định dạng")]
+        [StringLength(100)]
+        [Display(Name = "Email")]
         public string CustomerEmail { get; set; }
 
-        [Required(ErrorMessage = "Rồi không nhập địa chỉ rồi sao giao hàng?")]
+        [Required(ErrorMessage = "Vui lòng nhập địa chỉ")]
+        [StringLength(255, ErrorMessage = "Địa chỉ tối đa 255 ký tự")]
         [Display(Name = "Địa chỉ")]
         public string CustomerAddress { get; set; }
-
     }
 }

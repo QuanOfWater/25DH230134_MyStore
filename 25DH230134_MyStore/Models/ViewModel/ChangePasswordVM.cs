@@ -1,25 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
+using System.ComponentModel.DataAnnotations;
 
 namespace _25DH230134_MyStore.Models.ViewModel
 {
+    //Form để đổi mật khẩu
     public class ChangePasswordVM
     {
-        [Required(ErrorMessage = "Buộc phải nhập mật khẩu cũ!")]
+        [Required(ErrorMessage = "Vui lòng nhập mật khẩu hiện tại")]
         [DataType(DataType.Password)]
-        [Display(Name = "Mật khẩu cũ")]
+        [Display(Name = "Mật khẩu hiện tại")]
         public string OldPassword { get; set; }
-        [Required(ErrorMessage = "Buộc phải nhập mật khẩu mới!")]
+
+        [Required(ErrorMessage = "Vui lòng nhập mật khẩu mới")]
+        [StringLength(50, MinimumLength = 6, ErrorMessage = "Mật khẩu từ 6 đến 50 ký tự")]
+        [RegularExpression(@"^\S+$", ErrorMessage = "Mật khẩu không được chứa khoảng trắng")]
         [DataType(DataType.Password)]
         [Display(Name = "Mật khẩu mới")]
         public string NewPassword { get; set; }
-        [Required(ErrorMessage = "Buộc phải xác nhận mật khẩu mới!")]
+
+        [Required(ErrorMessage = "Vui lòng nhập lại mật khẩu mới")]
         [DataType(DataType.Password)]
-        [Display(Name = "Xác nhận mật khẩu mới")]
-        [Compare("NewPassword", ErrorMessage = "Mật khẩu xác nhận không khớp!")]
+        [Compare("NewPassword", ErrorMessage = "Mật khẩu nhập lại không khớp")]
+        [Display(Name = "Nhập lại mật khẩu mới")]
         public string ConfirmNewPassword { get; set; }
     }
 }

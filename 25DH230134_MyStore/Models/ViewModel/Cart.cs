@@ -1,61 +1,89 @@
-﻿using System;
+﻿using _25DH230134_MyStore.Models.ViewModel;
+using PagedList;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace _25DH230134_MyStore.Models.ViewModel.GioHang
+namespace _25DH230134_MyStore.Models.ViewModel
 {
+    //Quản lý danh sách các SP trong giỏ
     public class Cart
     {
-        private List<CartItem> items = new List<CartItem>();// Danh sách các mặt hàng trong giỏ
-        public IEnumerable<CartItem> Items => items;// Trả về danh sách các mặt hàng trong giỏ
-        //Danh sách các sản phẩm trong giỏ hàng được nhóm theo CategoryName
-        public List<IGrouping<string, CartItem>> GroupedItems => items.GroupBy(i => i.Category).ToList();
-        //Các thuộc tính hỗ trợ phân trang
-        public int PageNumber { get; set; }
-        public int PageSize { get; set; } = 6;
-        //Danh sách các sản phẩm cùng danh mục trong giỏ
-        public PagedList.IPagedList<Product> SimilarProduct { get; set; }
+        //Số lượng tối đa của một SP trong giỏ
+        public const int MaxQuantity = 99;
+        public List<CartItem> items = new List<CartItem>();
+        public IEnumerable<CartItem> Items => items;
 
-        //Thêm sản phẩm vào giỏ
-        public void AddItem(int productId, string productImage, string productName, string productDescription, decimal unitPrice, int quantity, string category)
+        //Danh sách các sản phẩm trong giỏ hàng đã được nhóm theo tên danh mục
+        public List<IGrouping<string, CartItem>> GroupedItems => items.GroupBy(i => i.Category).ToList();
+
+        //Danh sách các sản phẩm cùng danh mục với các sản phẩm trong giỏ
+        public IPagedList<Product> SimilarProducts { get; set; }
+
+        //Thêm sản phẩm: Đã có trong giỏ thì cộng thêm số lượng
+        public void AddItem(int productId, string productImage, string productName,
+            decimal unitPrice, int quantity, string category)
         {
+            quantity = Math.Max(1, quantity);
             var existingItem = items.FirstOrDefault(i => i.ProductID == productId);
-            if (existingItem == null)
+
+            if (existingItem != null)
             {
-                items.Add(new CartItem { ProductID = productId, ProductImage = productImage, ProductName = productName, ProductDescription = productDescription, UnitPrice = unitPrice, Quantity = quantity, Category = category });
+                existingItem.Quantity = Math.Min(existingItem.Quantity + quantity, MaxQuantity);
             }
             else
             {
-                existingItem.Quantity += quantity;
+                items.Add(new CartItem
+                {
+                    ProductID = productId,
+                    ProductImage = productImage,
+                    ProductName = productName,
+                    UnitPrice = unitPrice,
+                    Quantity = Math.Min(quantity, MaxQuantity),
+                    Category = category
+                });
             }
         }
 
-        //Xóa sản phẩm khỏi giỏ
+        //Xóa một sản phẩm khỏi giỏ
         public void RemoveItem(int productId)
         {
             items.RemoveAll(i => i.ProductID == productId);
         }
-        //Tính tổng giá trị của giỏ
+
+        // Cập nhật số lượng: Nhỏ hơn một thì xóa sản phẩm khỏi giỏ
+        public void UpdateQuantity(int productId, int quantity)
+        {
+            var item = items.FirstOrDefault(i => i.ProductID == productId);
+            if (item == null)
+            {
+                return;
+            }
+            if (quantity < 1)
+            {
+                RemoveItem(productId);
+                return;
+            }
+            item.Quantity = Math.Min(quantity, MaxQuantity);
+        }
+
+        //Tổng giá trị giỏ hàng của đơn hàng
         public decimal TotalValue()
         {
             return items.Sum(i => i.TotalPrice);
+        }
+
+        //Tổng số lượng sản phẩm trong giỏ (cái icon đỏ có số trên giỏ hàng ở header)
+        public int TotalQuantity()
+        {
+            return items.Sum(i => i.Quantity);
         }
 
         //Làm trống giỏ hàng
         public void Clear()
         {
             items.Clear();
-        }
-
-        //Cập nhật số lượng sản phẩm đã chọn
-        public void UpdateQuantity(int productId, int quantity)
-        {
-            var item = items.FirstOrDefault(i => i.ProductID == productId);
-            if (item != null)
-            {
-                item.Quantity = quantity;
-            }
         }
     }
 }

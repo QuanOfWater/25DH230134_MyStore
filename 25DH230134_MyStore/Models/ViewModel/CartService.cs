@@ -3,18 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace _25DH230134_MyStore.Models.ViewModel.GioHang
+namespace _25DH230134_MyStore.Models.ViewModel
 {
+    //Tương tác với giỏ hàng lưu trong session
     public class CartService
     {
         private readonly HttpSessionStateBase session;
+
         public CartService(HttpSessionStateBase session)
         {
             this.session = session;
         }
+
+        //Lấy giỏ hàng từ session, chưa có thì tạo mới
         public Cart GetCart()
         {
-            var cart = (Cart)session["Cart"];
+            var cart = session["Cart"] as Cart;
             if (cart == null)
             {
                 cart = new Cart();
@@ -23,6 +27,7 @@ namespace _25DH230134_MyStore.Models.ViewModel.GioHang
             return cart;
         }
 
+        //Xóa giỏ hàng khỏi session
         public void ClearCart()
         {
             session["Cart"] = null;

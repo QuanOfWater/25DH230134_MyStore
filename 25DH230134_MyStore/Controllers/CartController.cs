@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using _25DH230134_MyStore.Models;
-using _25DH230134_MyStore.Models.ViewModel.GioHang;
+using _25DH230134_MyStore.Models.ViewModel;
 using PagedList;
 
 namespace _25DH230134_MyStore.Controllers
@@ -32,9 +32,8 @@ namespace _25DH230134_MyStore.Controllers
             //Đoạn code liên quan tới phân trang
             //Lấy số trang hiện tại (mặc định là trang 1 nếu không có giá trị)
             int pageNumber = page ?? 1;
-            int pageSize = cart.PageSize;// số sản phẩm mỗi trang
-
-            cart.SimilarProduct = similarProducts.OrderBy(p => p.ProductID).ToPagedList(pageNumber, pageSize);
+            int pageSize = 6;// số sản phẩm mỗi trang
+            cart.SimilarProducts = similarProducts.OrderBy(p => p.ProductID).ToPagedList(pageNumber, pageSize);
             return View(cart);
         }
         //Thêm sản phẩm vào giỏ
@@ -44,7 +43,7 @@ namespace _25DH230134_MyStore.Controllers
             if (product != null)
             {
                 var cartService = GetCartService();
-                cartService.GetCart().AddItem(product.ProductID, product.ProductImage, product.ProductName, product.ProductDescription, product.ProductPrice, quantity, product.Category.CategoryName);
+                cartService.GetCart().AddItem(product.ProductID, product.ProductImage, product.ProductName, product.ProductPrice, quantity, product.Category.CategoryName); ;
             }
             return RedirectToAction("Index");
         }
