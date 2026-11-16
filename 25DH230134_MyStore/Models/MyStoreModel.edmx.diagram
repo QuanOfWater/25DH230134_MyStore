@@ -9,7 +9,7 @@
         <EntityTypeShape EntityType="MyStoreModel.Customer" Width="1.5" PointX="8.5" PointY="2.125" IsExpanded="true" />
         <EntityTypeShape EntityType="MyStoreModel.Order" Width="1.5" PointX="6.75" PointY="2.125" IsExpanded="true" />
         <EntityTypeShape EntityType="MyStoreModel.OrderDetail" Width="1.5" PointX="5" PointY="2.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="MyStoreModel.Product" Width="1.5" PointX="3" PointY="2" IsExpanded="true" />
+        <EntityTypeShape EntityType="MyStoreModel.Product" Width="1.5" PointX="3" PointY="2.125" IsExpanded="true" />
         <EntityTypeShape EntityType="MyStoreModel.sysdiagram" Width="1.5" PointX="15.125" PointY="1.625" IsExpanded="true" />
         <EntityTypeShape EntityType="MyStoreModel.User" Width="1.5" PointX="10.125" PointY="2.625" IsExpanded="true" />
         <AssociationConnector Association="MyStoreModel.FK_Pro_Category" ManuallyRouted="false" />

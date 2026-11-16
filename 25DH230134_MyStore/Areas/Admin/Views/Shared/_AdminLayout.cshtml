@@ -3,26 +3,36 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - QUẢN TRỊ WEBSITE</title>
+    <title>@ViewBag.Title - My ASP.NET Application</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
+    <style>
+        html, body {
+            height: 100%;
+        }
+
+        footer {
+            bottom: 0;
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark">
         <div class="container">
-            @Html.ActionLink("My Store", "Index", "Admin/HomeAdmin", new { area = "" }, new { @class = "navbar-brand" })
+            @Html.ActionLink("My Store", "Index", "Admin/Home", new { area = "" }, new { @class = "navbar-brand" })
             <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" title="Toggle navigation" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
                 <ul class="navbar-nav flex-grow-1">
-                    <li>@Html.ActionLink("Home", "Index", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Danh mục", "Index", "Categories", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Sản phẩm", "Index", "Products", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Khách hàng", "Index", "Customers", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Đơn hàng", "Index", "Oders", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Tài khoản", "Index", "Users", new { area = "" }, new { @class = "nav-link" })</li>
+                    <li>@Html.ActionLink("Home", "Index", "Admin/Home", new { area = "" }, new { @class = "nav-link" })</li>
+                    <li>@Html.ActionLink("Danh mục", "Index", "Admin/Categories", new { area = "" }, new { @class = "nav-link" })</li>
+                    <li>@Html.ActionLink("Sản phẩm", "Index", "Admin/Products", new { area = "" }, new { @class = "nav-link" })</li>
+                    <li>@Html.ActionLink("Khách hàng", "Index", "Admin/Customers", new { area = "" }, new { @class = "nav-link" })</li>
+                    <li>@Html.ActionLink("Đơn hàng", "Index", "Admin/Orders", new { area = "" }, new { @class = "nav-link" })</li>
+                    <li>@Html.ActionLink("Tài khoản", "Index", "Admin/Users", new { area = "" }, new { @class = "nav-link" })</li>
+
                 </ul>
             </div>
         </div>
@@ -31,9 +41,9 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; @DateTime.Now.Year - PC Builder</p>
+            <p>&copy; @DateTime.Now.Year - Flower Store</p>
             <h4>Contact</h4>
-            <p>Trần Hồng Quân</p>
+            <p>Trần Hồng Quân - 25DH230134</p>
         </footer>
     </div>
 

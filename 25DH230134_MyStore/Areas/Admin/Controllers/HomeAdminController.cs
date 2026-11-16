@@ -8,7 +8,7 @@ namespace _25DH230134_MyStore.Areas.Admin.Controllers
 {
     public class HomeAdminController : Controller
     {
-        // GET: Admin/HomeAdmin
+        // GET: Admin/Home
         public ActionResult Index()
         {
             return View();

@@ -8,17 +8,15 @@ namespace _25DH230134_MyStore.Models.ViewModel
 {
     public class HomeProductVM
     {
-        //Tiêu chí tìm kiếm
         public string SearchTerm { get; set; }
 
-        //Các thuộc tính hỗ trợ paging
-        public int PageNumber { get; set; } //Vị trí trang hiện tại
-        public int PageSize { get; set; } = 10; //Mỗi trang có bao nhiêu bản ghi
+        //Thuộc tính hỗ trợ phân trang
+        public int PageNumber { get; set; } //Trang hiện tại
+        public int PageSize { get; set; } // Số lượng sản phẩm trên 1 trang
 
-        //Danh sách sản phẩm nổi bật
+        //danh sách sản phẩm nổi bật
         public List<Product> FeaturedProducts { get; set; }
-
-        //Danh sách sản phẩm mới đã phân trang
+        //danh sách sản phẩm mới đã phân trang 
         public PagedList.IPagedList<Product> NewProducts { get; set; }
 
     }
