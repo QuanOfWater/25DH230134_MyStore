@@ -1,53 +1,71 @@
 ﻿@model _25DH230134_MyStore.Models.ViewModel.LoginVM
-
 @{
-    ViewBag.Title = "Login";
+    ViewBag.Title = "Đăng nhập";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<link rel="stylesheet" type="text/css" href="~/Content/Style.css" />
 
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-icon"><i class="fas fa-user"></i></div>
+            <h2 class="auth-title">Đăng nhập</h2>
+            <div class="auth-subtitle">Chào mừng bạn quay lại!</div>
+        </div>
 
-<div>
-    @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { role = "form" }))
-    {
-        @Html.AntiForgeryToken()
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        //Tên đăng nhập
-        <div>
-            @Html.LabelFor(model => model.Username, new { @class = "control-label col-md-2" })
-            <div class="col-md-4">
-                @Html.TextBoxFor(m => m.Username, new { @class = "control-label col-md-6" })
+        @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { role = "form" }))
+        {
+            @Html.AntiForgeryToken()
+
+            if (!ViewData.ModelState.IsValid && ViewData.ModelState[""] != null && ViewData.ModelState[""].Errors.Count > 0)
+            {
+                <div class="auth-alert">@Html.ValidationSummary(true)</div>
+            }
+
+            @* Tên đăng nhập *@
+            <div class="auth-field">
+                @Html.LabelFor(m => m.Username, new { @class = "auth-label" })
+                <div class="auth-input">
+                    <i class="fas fa-user auth-input-icon"></i>
+                    @Html.TextBoxFor(m => m.Username, new { @class = "form-control", placeholder = "Nhập tên đăng nhập", autofocus = "autofocus" })
+                </div>
                 @Html.ValidationMessageFor(m => m.Username, "", new { @class = "text-danger" })
             </div>
-        </div>
 
-        //mật khẩu
-        <div>
-            @Html.LabelFor(model => model.Password, new { @class = "control-label col-md-2" })
-            <div class="col-md-4">
-                @Html.PasswordFor(m => m.Password, new { @class = "control-label col-md-6 text-danger", id = "password" })
+            @* Mật khẩu *@
+            <div class="auth-field">
+                @Html.LabelFor(m => m.Password, new { @class = "auth-label" })
+                <div class="auth-input has-toggle">
+                    <i class="fas fa-lock auth-input-icon"></i>
+                    @Html.PasswordFor(m => m.Password, new { @class = "form-control", id = "password", placeholder = "Nhập mật khẩu" })
+                    <button type="button" class="auth-toggle" tabindex="-1" onclick="togglePassword('password', this)">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
                 @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
             </div>
-        </div>
 
-        <div>
-            <div class="col-md-4">
-                <input type="submit" value="Đăng nhập" class="btn btn-info" />
-                <p>Bạn Chưa có Tài Khoản? <a href="@Url.Action("Register","Account",null)">Đăng Ký</a></p>
+            <button type="submit" class="auth-btn">Đăng nhập</button>
+
+            <div class="auth-footer">
+                Bạn chưa có tài khoản? <a href="@Url.Action("Register", "Account")">Đăng ký ngay</a>
             </div>
-        </div>
-    }
+        }
+    </div>
 </div>
 
-@section Scripts{
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
     <script>
-        function togglePassword(inputID, button) {
-            var input = document.getElementById(inputID);
+        //Ẩn / hiện mật khẩu
+        function togglePassword(inputId, button) {
+            var input = document.getElementById(inputId);
             if (input.type === 'password') {
                 input.type = 'text';
-                button.innerHTML = '<i class="fas fa-eye-slash"></i>;
+                button.innerHTML = '<i class="fas fa-eye-slash"></i>';
             } else {
                 input.type = 'password';
-                button.innerHTML = '<i class="fas fa-eye"></i>;
+                button.innerHTML = '<i class="fas fa-eye"></i>';
             }
         }
     </script>

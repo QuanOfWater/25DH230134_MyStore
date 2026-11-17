@@ -1,133 +1,126 @@
 ﻿@model _25DH230134_MyStore.Models.ViewModel.RegisterVM
-
 @{
-    ViewBag.Title = "ĐĂNG KÝ TÀI KHOẢN";
+    ViewBag.Title = "Đăng ký tài khoản";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<style>
-    /*.dangKy{
-        margin: 10px;
-        background-color: #277ebd;
-        color: white;
-        font-weight: bold;
-        border: 0;
-        border-radius: 5px;
-        width: 150px;
-        height: 40px;
-    }*/
-    .btn-info {
-        margin: 10px 0 10px 0;
-    }
+<link rel="stylesheet" type="text/css" href="~/Content/Style.css" />
 
-    a {
-        text-decoration: none;
-    }
-</style>
-<div>
-    @using (Html.BeginForm("Register", "Account", FormMethod.Post))
-    {
-        @Html.AntiForgeryToken()
-
-        <div class="row">
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-            <div>
-                <h2>
-                    Đăng ký tài khoản
-                </h2>
-            </div>
-
-            @* Tên đăng nhập *@
-            <div class=" row">
-                @Html.LabelFor(model => model.Username, new { })
-                <div class="col-md-4">
-                    @Html.EditorFor(model => model.Username, new { })
-                    @Html.ValidationMessageFor(model => model.Username, "", new { @class = "text-danger" })
-                </div>
-
-            </div>
-
-            @* Mật khẩu *@
-
-            <div>
-                @Html.LabelFor(model => model.Password)
-                <div class="col-md-4">
-                    @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @id = "password" } })
-                    @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
-                </div>
-
-            </div>
-
-            @* Xác nhận mật khẩu *@
-
-            <div>
-                @Html.LabelFor(model => model.ConfirmPassword)
-                <div class="col-md-4">
-                    @Html.EditorFor(model => model.ConfirmPassword, new { htmlAttributes = new { @id = "ConfirmPassword" } })
-                    @Html.ValidationMessageFor(model => model.ConfirmPassword, "", new { @class = "text-danger" })
-                </div>
-
-            </div>
-
-            @* Họ tên khách hàng *@
-            <div>
-
-                @Html.LabelFor(model => model.CustomerName)
-                <div class="col-md-4">
-                    @Html.EditorFor(model => model.CustomerName)
-                    @Html.ValidationMessageFor(model => model.CustomerName, "", new { @class = "text-danger" })
-                </div>
-
-            </div>
-
-            @* SĐT khách hàng *@
-            <div>
-                @Html.LabelFor(model => model.CustomerPhone)
-                <div class="col-md-4">
-                    @Html.EditorFor(model => model.CustomerPhone)
-                    @Html.ValidationMessageFor(model => model.CustomerPhone, "", new { @class = "text-danger" })
-                </div>
-
-            </div>
-
-            @* Email khách hàng *@
-            <div>
-                @Html.LabelFor(model => model.CustomerEmail)
-                <div class="col-md-12">
-                    @Html.EditorFor(model => model.CustomerEmail)
-                    @Html.ValidationMessageFor(model => model.CustomerEmail, "", new { @class = "text-danger" })
-                </div>
-
-            </div>
-
-            @* Địa chỉ khách hàng *@
-            <div>
-                @Html.LabelFor(model => model.CustomerAddress)
-                <div class="col-md-6">
-                    @Html.EditorFor(model => model.CustomerAddress)
-                    @Html.ValidationMessageFor(model => model.CustomerAddress, "", new { @class = "text-danger" })
-                </div>
-
-            </div>
-
-            <div>
-                <input type="submit" value="Đăng ký" class="btn btn-info" />
-                <p>Bạn đã có tài khoản?<a class="" href="@Url.Action("Login","Account",null)">Đăng nhập</a></p>
-            </div>
+<div class="auth-wrapper">
+    <div class="auth-card auth-card-lg">
+        <div class="auth-header">
+            <div class="auth-icon"><i class="fas fa-user-plus"></i></div>
+            <h2 class="auth-title">Đăng ký tài khoản</h2>
+            <div class="auth-subtitle">Tạo tài khoản để đặt hoa nhanh hơn</div>
         </div>
-    }
 
+        @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { role = "form" }))
+        {
+            @Html.AntiForgeryToken()
+
+            if (!ViewData.ModelState.IsValid && ViewData.ModelState[""] != null && ViewData.ModelState[""].Errors.Count > 0)
+            {
+                <div class="auth-alert">@Html.ValidationSummary(true)</div>
+            }
+
+            <div class="row">
+                @* Họ tên *@
+                <div class="col-md-6 auth-field">
+                    @Html.LabelFor(m => m.CustomerName, new { @class = "auth-label" })
+                    <div class="auth-input">
+                        <i class="fas fa-id-card auth-input-icon"></i>
+                        @Html.TextBoxFor(m => m.CustomerName, new { @class = "form-control", placeholder = "Nguyễn Văn A" })
+                    </div>
+                    @Html.ValidationMessageFor(m => m.CustomerName, "", new { @class = "text-danger" })
+                </div>
+
+                @* Số điện thoại *@
+                <div class="col-md-6 auth-field">
+                    @Html.LabelFor(m => m.CustomerPhone, new { @class = "auth-label" })
+                    <div class="auth-input">
+                        <i class="fas fa-phone auth-input-icon"></i>
+                        @Html.TextBoxFor(m => m.CustomerPhone, new { @class = "form-control", placeholder = "0912345678", type = "tel" })
+                    </div>
+                    @Html.ValidationMessageFor(m => m.CustomerPhone, "", new { @class = "text-danger" })
+                </div>
+
+                @* Email *@
+                <div class="col-md-6 auth-field">
+                    @Html.LabelFor(m => m.CustomerEmail, new { @class = "auth-label" })
+                    <div class="auth-input">
+                        <i class="fas fa-envelope auth-input-icon"></i>
+                        @Html.TextBoxFor(m => m.CustomerEmail, new { @class = "form-control", placeholder = "ban@gmail.com", type = "email" })
+                    </div>
+                    @Html.ValidationMessageFor(m => m.CustomerEmail, "", new { @class = "text-danger" })
+                </div>
+
+                @* Địa chỉ *@
+                <div class="col-md-6 auth-field">
+                    @Html.LabelFor(m => m.CustomerAddress, new { @class = "auth-label" })
+                    <div class="auth-input">
+                        <i class="fas fa-map-marker-alt auth-input-icon"></i>
+                        @Html.TextBoxFor(m => m.CustomerAddress, new { @class = "form-control", placeholder = "Số nhà, đường, quận, thành phố" })
+                    </div>
+                    @Html.ValidationMessageFor(m => m.CustomerAddress, "", new { @class = "text-danger" })
+                </div>
+
+                @* Tên đăng nhập *@
+                <div class="col-12 auth-field">
+                    @Html.LabelFor(m => m.Username, new { @class = "auth-label" })
+                    <div class="auth-input">
+                        <i class="fas fa-user auth-input-icon"></i>
+                        @Html.TextBoxFor(m => m.Username, new { @class = "form-control", placeholder = "Chữ không dấu, số hoặc dấu _" })
+                    </div>
+                    @Html.ValidationMessageFor(m => m.Username, "", new { @class = "text-danger" })
+                </div>
+
+                @* Mật khẩu *@
+                <div class="col-md-6 auth-field">
+                    @Html.LabelFor(m => m.Password, new { @class = "auth-label" })
+                    <div class="auth-input has-toggle">
+                        <i class="fas fa-lock auth-input-icon"></i>
+                        @Html.PasswordFor(m => m.Password, new { @class = "form-control", id = "password", placeholder = "Tối thiểu 6 ký tự" })
+                        <button type="button" class="auth-toggle" tabindex="-1" onclick="togglePassword('password', this)">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                </div>
+
+                @* Xác nhận mật khẩu *@
+                <div class="col-md-6 auth-field">
+                    @Html.LabelFor(m => m.ConfirmPassword, new { @class = "auth-label" })
+                    <div class="auth-input has-toggle">
+                        <i class="fas fa-lock auth-input-icon"></i>
+                        @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control", id = "confirmPassword", placeholder = "Nhập lại mật khẩu" })
+                        <button type="button" class="auth-toggle" tabindex="-1" onclick="togglePassword('confirmPassword', this)">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <button type="submit" class="auth-btn">Đăng ký</button>
+
+            <div class="auth-footer">
+                Đã có tài khoản? <a href="@Url.Action("Login", "Account")">Đăng nhập</a>
+            </div>
+        }
+    </div>
 </div>
-@section Scripts{
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
     <script>
-        function togglePassword(inputID, button) {
-            var input = document.getElementById(inputID);
+        //Ẩn / hiện mật khẩu
+        function togglePassword(inputId, button) {
+            var input = document.getElementById(inputId);
             if (input.type === 'password') {
                 input.type = 'text';
-                button.innerHTML = '<i class="fas fa-eye-slash"></i>;
-            }
-            else {
+                button.innerHTML = '<i class="fas fa-eye-slash"></i>';
+            } else {
                 input.type = 'password';
-                button.innerHTML = '<i class="fas fa-eye"></i>;
+                button.innerHTML = '<i class="fas fa-eye"></i>';
             }
         }
     </script>
