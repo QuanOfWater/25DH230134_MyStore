@@ -24,7 +24,7 @@ namespace _25DH230134_MyStore.Models.ViewModel
         public string CustomerFilterName { get; set; }
 
         //Các trạng thái đơn hàng Admin được quyền chỉnh sửa
-        public static readonly string[] OrderStatusOptions = { "Chờ thanh thoán", "Đang xử lý", "Đang vận chuyển", "Đã giao", "Đã hủy" };
+        public static readonly string[] OrderStatusOptions = { "Chờ thanh toán", "Đang xử lý", "Đang vận chuyển", "Đã giao", "Đã hủy" };
 
         //Danh sách trạng thái thanh toán đang có trong DB (đổ vào dropdown)
         public List<string> PaymentStatuses { get; set; } = new List<string>();
