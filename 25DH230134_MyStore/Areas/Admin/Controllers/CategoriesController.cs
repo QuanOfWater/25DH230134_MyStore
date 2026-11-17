@@ -1,4 +1,6 @@
-﻿using System;
+﻿using _25DH230134_MyStore.Areas.Admin.Filters;
+using _25DH230134_MyStore.Models;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
@@ -6,10 +8,10 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using _25DH230134_MyStore.Models;
 
 namespace _25DH230134_MyStore.Areas.Admin.Controllers
 {
+    [AdminAuthorize]
     public class CategoriesController : Controller
     {
         private MyStoreEntities db = new MyStoreEntities(); //khai báo câu lệnh này để truy vấn vào csdl
@@ -120,8 +122,19 @@ namespace _25DH230134_MyStore.Areas.Admin.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Category category = db.Categories.Find(id);
+            if (category == null)
+            {
+                return HttpNotFound();
+            }
+            // Danh mục còn sản phẩm thì không cho xóa (tránh lỗi khóa ngoại)
+            if (db.Products.Any(p => p.CategoryID == id))
+            {
+                TempData["ErrorMessage"] = "Không thể xóa danh mục \"" + category.CategoryName + "\" vì vẫn còn sản phẩm thuộc danh mục này.";
+                return RedirectToAction("Index");
+            }
             db.Categories.Remove(category);
             db.SaveChanges();
+            TempData["SuccessMessage"] = "Đã xóa danh mục \"" + category.CategoryName + "\".";
             return RedirectToAction("Index");
         }
 

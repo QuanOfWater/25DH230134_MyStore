@@ -1,6 +1,108 @@
-﻿@{
-    ViewBag.Title = "Index";
+﻿@model _25DH230134_MyStore.Models.ViewModel.DashboardVM
+@{
+    ViewBag.Title = "Trang quản trị";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h2>TRANG QUẢN TRỊ</h2>
+<h2>TRANG QUẢN TRỊ – THỐNG KÊ</h2>
+
+@* 4 Ô SỐ LIỆU *@
+<div class="row g-3 my-3">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <div>Tổng đơn hàng</div><h3>@Model.TotalOrders</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <div>Doanh thu (không tính đơn hủy)</div><h3>@Model.TotalRevenue.ToString("N0") ₫</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <div>Khách hàng</div><h3>@Model.TotalCustomers</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-danger">
+            <div class="card-body">
+                <div>Sản phẩm</div><h3>@Model.TotalProducts</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* CHỌN NĂM CHO BIỂU ĐỒ DOANH THU *@
+@using (Html.BeginForm("Index", "HomeAdmin", FormMethod.Get, new { @class = "d-flex gap-2 align-items-center mb-2" }))
+{
+    <label>Năm:</label>
+    <input type="number" name="year" value="@Model.Year" class="form-control" style="width:120px;" />
+    <button type="submit" class="btn btn-outline-primary btn-sm">Xem</button>
+}
+
+<div class="card mb-3">
+    <div class="card-body">
+        <div id="chartRevenue" style="height:350px;"></div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="card"><div class="card-body"><div id="chartStatus" style="height:320px;"></div></div></div>
+    </div>
+    <div class="col-md-6">
+        <div class="card"><div class="card-body"><div id="chartTop" style="height:320px;"></div></div></div>
+    </div>
+</div>
+
+@*@section scripts {
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+    <script>
+        //Dữ liệu từ controller, chuyển sang mảng JS
+        var revenueData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.RevenueByMonth.Select(x => new object[] { x.Label, x.Value })));
+        var statusData  = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.OrdersByStatus.Select(x => new object[] { x.Label, x.Value })));
+        var topData     = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.TopProducts.Select(x => new object[] { x.Label, x.Value })));
+
+        google.charts.load('current', { packages: ['corechart'] });
+        google.charts.setOnLoadCallback(drawCharts);
+
+        function drawCharts() {
+            //1. Biểu đồ cột: Doanh thu theo tháng
+            var d1 = new google.visualization.DataTable();
+            d1.addColumn('string', 'Tháng');
+            d1.addColumn('number', 'Doanh thu (₫)');
+            d1.addRows(revenueData);
+            new google.visualization.ColumnChart(document.getElementById('chartRevenue')).draw(d1, {
+                title: 'Doanh thu theo tháng – năm @Model.Year',
+                legend: { position: 'none' },
+                vAxis: { format: 'short' }
+            });
+
+            //2. Biểu đồ tròn: Đơn hàng theo trạng thái
+            var d2 = new google.visualization.DataTable();
+            d2.addColumn('string', 'Trạng thái');
+            d2.addColumn('number', 'Số đơn');
+            d2.addRows(statusData);
+            new google.visualization.PieChart(document.getElementById('chartStatus')).draw(d2, {
+                title: 'Đơn hàng theo trạng thái',
+                pieHole: 0.4
+            });
+
+            //3. Biểu đồ thanh ngang: Top 5 sản phẩm bán chạy
+            var d3 = new google.visualization.DataTable();
+            d3.addColumn('string', 'Sản phẩm');
+            d3.addColumn('number', 'Số lượng bán');
+            d3.addRows(topData);
+            new google.visualization.BarChart(document.getElementById('chartTop')).draw(d3, {
+                title: 'Top 5 sản phẩm bán chạy',
+                legend: { position: 'none' }
+            });
+        }
+    </script>
+}*@

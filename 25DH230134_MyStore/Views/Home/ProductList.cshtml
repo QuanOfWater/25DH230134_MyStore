@@ -1,0 +1,48 @@
+﻿@model PagedList.IPagedList<_25DH230134_MyStore.Models.Product>
+@using PagedList.Mvc
+@{
+    ViewBag.Title = "Danh mục";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int? catId = ViewBag.CategoryId;
+}
+<link rel="stylesheet" type="text/css" href="~/Content/CustomerHome.css" />
+
+<section class="container-fluid listProduct">
+    <h2>@(ViewBag.CategoryName ?? "Tất cả sản phẩm")</h2>
+
+    <div style="margin-bottom:15px;">
+        Sắp xếp:
+        @Html.ActionLink("Tên A-Z", "ProductList", new { categoryId = catId, sortOrder = "name_asc" }) |
+        @Html.ActionLink("Tên Z-A", "ProductList", new { categoryId = catId, sortOrder = "name_desc" }) |
+        @Html.ActionLink("Giá tăng dần", "ProductList", new { categoryId = catId, sortOrder = "price_asc" }) |
+        @Html.ActionLink("Giá giảm dần", "ProductList", new { categoryId = catId, sortOrder = "price_desc" })
+    </div>
+
+    @if (Model.Any())
+    {
+        <ul class="list-container">
+            @foreach (var product in Model)
+            {
+                <li class="lprod-item">
+                    <a href="@Url.Action("ProductDetails", "Home", new { id = product.ProductID })">
+                        @if (!string.IsNullOrEmpty(product.ProductImage))
+                        {
+                            <img src="@Url.Content(product.ProductImage)" alt="@product.ProductName" />
+                        }
+                    </a>
+                    <p class="prodPrice">@String.Format("{0:N0} VNĐ", product.ProductPrice)</p>
+                    <p class="prodName">@product.ProductName</p>
+                    <p class="prodSale">Đã bán:&nbsp;@product.OrderDetails.Count</p>
+                </li>
+            }
+        </ul>
+
+        <div class="pagination-container">
+            @Html.PagedListPager(Model, page => Url.Action("ProductList", new { categoryId = catId, sortOrder = ViewBag.SortOrder, page }))
+        </div>
+    }
+    else
+    {
+        <p>Danh mục này chưa có sản phẩm nào.</p>
+    }
+</section>

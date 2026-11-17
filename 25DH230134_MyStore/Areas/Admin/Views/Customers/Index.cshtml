@@ -1,59 +1,82 @@
-﻿@model IEnumerable<_25DH230134_MyStore.Models.Customer>
-
+﻿@model _25DH230134_MyStore.Models.ViewModel.CustomerSearchVM
+@using PagedList.Mvc
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Quản lý Khách hàng";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
+<link rel="stylesheet" href="~/Content/PagedList.css" />
 
-<h2>Index</h2>
+<h2>DANH SÁCH KHÁCH HÀNG</h2>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.CustomerName)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.CustomerPhone)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.CustomerEmail)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.CustomerAddress)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.User.Password)
-        </th>
-        <th></th>
-    </tr>
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
 
-    @foreach (var item in Model)
-    {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.CustomerName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CustomerPhone)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CustomerEmail)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CustomerAddress)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.User.Password)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.CustomerID }) |
-                @Html.ActionLink("Details", "Details", new { id = item.CustomerID }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.CustomerID })
-            </td>
-        </tr>
-    }
+@using (Html.BeginForm("Index", "Customers", FormMethod.Get, new { @class = "d-flex gap-2 mb-2" }))
+{
+    <input type="hidden" name="sortOrder" value="@Model.SortOrder" />
+    <input type="text" name="searchTerm" value="@Model.SearchTerm" class="form-control" style="max-width:400px;"
+           placeholder="Tìm theo tên, số điện thoại, email, tên đăng nhập" />
+    <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+    @Html.ActionLink("Xóa lọc", "Index", null, new { @class = "btn btn-outline-secondary" })
+}
 
-</table>
+<div class="mb-3">
+    Sắp xếp:
+    @Html.ActionLink("Tên A-Z", "Index", new { sortOrder = "name_asc", searchTerm = Model.SearchTerm }) |
+    @Html.ActionLink("Tên Z-A", "Index", new { sortOrder = "name_desc", searchTerm = Model.SearchTerm }) |
+    @Html.ActionLink("Nhiều đơn nhất", "Index", new { sortOrder = "orders_desc", searchTerm = Model.SearchTerm }) |
+    @Html.ActionLink("Mới nhất", "Index", new { sortOrder = "newest", searchTerm = Model.SearchTerm })
+</div>
+
+@if (!Model.Customers.Any())
+{
+    <div class="alert alert-warning text-center"><strong>KHÔNG CÓ</strong></div>
+}
+else
+{
+    <table class="table table-bordered table-hover">
+        <thead class="table-success">
+            <tr>
+                <th>Họ tên</th>
+                <th>Số điện thoại</th>
+                <th>Email</th>
+                <th>Địa chỉ</th>
+                <th>Tên đăng nhập</th>
+                <th>Số đơn</th>
+                <th style="width:260px;"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Customers)
+            {
+                <tr>
+                    <td>@item.CustomerName</td>
+                    <td>@item.CustomerPhone</td>
+                    <td>@item.CustomerEmail</td>
+                    <td>@item.CustomerAddress</td>
+                    <td>@item.Username</td>
+                    <td>@item.Orders.Count</td>
+                    <td>
+                        @Html.ActionLink("Chi tiết", "Details", new { id = item.CustomerID }, new { @class = "btn btn-info btn-sm" })
+                        @Html.ActionLink("Đơn hàng", "Index", "Orders", new { customerId = item.CustomerID }, new { @class = "btn btn-warning btn-sm" })
+                        @Html.ActionLink("Sửa", "Edit", new { id = item.CustomerID }, new { @class = "btn btn-primary btn-sm" })
+                        @Html.ActionLink("Xóa", "Delete", new { id = item.CustomerID }, new { @class = "btn btn-danger btn-sm" })
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div>
+        Trang @Model.Customers.PageNumber / @Model.Customers.PageCount (tổng @Model.Customers.TotalItemCount khách hàng)
+        @Html.PagedListPager(Model.Customers, page => Url.Action("Index", new { page, searchTerm = Model.SearchTerm, sortOrder = Model.SortOrder }))
+    </div>
+}
+
+<p>@Html.ActionLink("THÊM KHÁCH HÀNG", "Create", null, new { @class = "btn btn-success" })</p>

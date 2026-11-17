@@ -1,0 +1,59 @@
+﻿@model _25DH230134_MyStore.Models.Order
+@{
+    ViewBag.Title = "Chi tiết đơn hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>CHI TIẾT ĐƠN HÀNG #@Model.OrderID</h2>
+<hr />
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+
+<div class="row mb-3">
+    <div class="col-md-6">
+        <strong>Khách hàng:</strong> @(Model.Customer != null ? Model.Customer.CustomerName : "N/A") <br />
+        <strong>Số điện thoại:</strong> @(Model.Customer != null ? Model.Customer.CustomerPhone : "") <br />
+        <strong>Địa chỉ giao:</strong> @Model.ShippingAddress
+    </div>
+    <div class="col-md-6 text-end">
+        <strong>Ngày đặt:</strong> @Model.OrderDate.ToString("dd/MM/yyyy HH:mm") <br />
+        <strong>Giao hàng:</strong> @Model.DeliveryMethod <br />
+        <strong>Thanh toán:</strong> @Model.PaymentMethod <br />
+        <strong>Trạng thái thanh toán:</strong> @Model.PaymentStatus <br />
+        <strong>Trạng thái đơn:</strong> <span class="badge bg-info text-dark">@Model.OrderStatus</span>
+    </div>
+</div>
+
+<table class="table table-bordered">
+    <thead class="table-success">
+        <tr>
+            <th>Sản phẩm</th>
+            <th>Số lượng</th>
+            <th>Đơn giá</th>
+            <th>Thành tiền</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.OrderDetails)
+        {
+            <tr>
+                <td>@(item.Product != null ? item.Product.ProductName : "Sản phẩm đã bị xóa")</td>
+                <td>@item.Quantity</td>
+                <td>@item.UnitPrice.ToString("N0") ₫</td>
+                <td>@((item.TotalPrice ?? item.Quantity * item.UnitPrice).ToString("N0")) ₫</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="text-end" style="font-size:18px;">
+    <strong>Tổng cộng: <span style="color:red;">@Model.TotalAmount.ToString("N0") ₫</span></strong>
+</div>
+<hr />
+<div>
+    @Html.ActionLink("Cập nhật trạng thái", "UpdateStatus", new { id = Model.OrderID }, new { @class = "btn btn-warning" })
+    @Html.ActionLink("Quay lại danh sách", "Index", null, new { @class = "btn btn-secondary" })
+</div>

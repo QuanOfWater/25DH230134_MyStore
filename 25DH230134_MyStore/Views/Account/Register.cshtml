@@ -52,7 +52,6 @@
                 @Html.LabelFor(model => model.Password)
                 <div class="col-md-4">
                     @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @id = "password" } })
-                    <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('password',this)" tabindex="-1">👁️</button>
                     @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
                 </div>
 
@@ -64,7 +63,6 @@
                 @Html.LabelFor(model => model.ConfirmPassword)
                 <div class="col-md-4">
                     @Html.EditorFor(model => model.ConfirmPassword, new { htmlAttributes = new { @id = "ConfirmPassword" } })
-                    <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('ConfirmPassword',this)" tabindex="-1">👁️</button>
                     @Html.ValidationMessageFor(model => model.ConfirmPassword, "", new { @class = "text-danger" })
                 </div>
 
@@ -125,11 +123,11 @@
             var input = document.getElementById(inputID);
             if (input.type === 'password') {
                 input.type = 'text';
-                button.innerHTML = '🙈';
+                button.innerHTML = '<i class="fas fa-eye-slash"></i>;
             }
             else {
                 input.type = 'password';
-                button.innerHTML = '👁️';
+                button.innerHTML = '<i class="fas fa-eye"></i>;
             }
         }
     </script>

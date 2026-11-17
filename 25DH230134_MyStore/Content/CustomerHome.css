@@ -1,6 +1,6 @@
 ﻿/* --- 1. BANNER --- */
 .banner {
-    background-image: url('../images/banner.jpg');
+    background-image: url('images/banner.jpg');
     background-color: #333;
     background-size: cover;
     background-position: center;

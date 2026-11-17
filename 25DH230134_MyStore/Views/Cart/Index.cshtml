@@ -2,12 +2,11 @@
 @{
     ViewBag.Title = "Giỏ hàng";
     Layout = "~/Views/Shared/_Layout.cshtml";
-
-
 }
 <style>
     .shoppingcart {
         background-color: ghostwhite;
+        font-size: smaller;
     }
 
     .cart-section {
@@ -23,10 +22,6 @@
         border: 1px solid #808080;
         margin: 5px;
     }
-
-    .shoppingcart {
-        font-size: smaller;
-    }
 </style>
 
 <h2>GIỎ HÀNG</h2>
@@ -35,87 +30,130 @@
     {
         <p>Bạn chưa có sản phẩm nào trong giỏ</p>
     }
-
     else
     {
-        <div class="col-md-8 cart-section">
-            @foreach (var categoryGroup in Model.GroupedItems)
-            {
-                <h3>@categoryGroup.Key</h3>
-                <table class="table cart-section">
-                    <thead>
-                        <tr>
-                            <th colspan="2">Sản phẩm</th>
-                            <th>Số lượng</th>
-                            <th>Đơn giá</th>
-                            <th>Thành tiền</th>
-                            <th title="Xóa tất cả mặt hàng trong giỏ">
-                                <a href="@Url.Action("ClearCart","Cart", null)"><i class="fas fa-trash-alt" style="max-height:20px"></i></a>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in categoryGroup)
-                        {
+        <div class="row">
+            <!-- PHẦN CHI TIẾT GIỎ HÀNG (nhóm theo danh mục) -->
+            <div class="col-md-8 cart-section">
+                <div style="display:flex; justify-content:space-between; padding:0 8px;">
+                    <label><input type="checkbox" id="chkAll" checked /> Chọn tất cả</label>
+                    <a href="@Url.Action("ClearCart", "Cart")" onclick="return confirm('Xóa toàn bộ giỏ hàng?');">
+                        <i class="fas fa-trash-alt"></i> Xóa tất cả
+                    </a>
+                </div>
+
+                @foreach (var categoryGroup in Model.GroupedItems)
+                {
+                    <h3>@categoryGroup.Key</h3>
+                    <table class="table">
+                        <thead>
                             <tr>
-                                <td><img src="@Url.Content(item.ProductImage)" alt="@item.ProductName" style="max-height:80px" /></td>
-                                <td class="col-md-3">@item.ProductName</td>
-                                <td>
-                                    @using (Html.BeginForm("UpdateQuantity", "Cart", FormMethod.Post))
-                                    {
-
-                                        <input type="hidden" name="id" value="@item.ProductID" />
-                                        <button type="button" style="width:20px" onclick="cartUpdateQuantity(@item.ProductID,@item.Quantity-1)">-</button>
-                                        <input type="number" name="quantity" value="@item.Quantity" min="1" max="100" style="width: 40px;text-align: right;" readonly />
-                                        <button type="button" style="width:20px" onclick="cartUpdateQuantity(@item.ProductID,@item.Quantity+1)">+</button>
-                                    }
-                                </td>
-                                <td>@item.UnitPrice.ToString("N0")</td>
-                                <td>@item.TotalPrice.ToString("N0")</td>
-                                <td><a href="@Url.Action("RemoveFromCart", "Cart", new {id= item.ProductID})"><i class="fas fa-trash-alt" style="max-height:20px"></i></a></td>
+                                <th></th>
+                                <th colspan="2">Sản phẩm</th>
+                                <th>Số lượng</th>
+                                <th>Đơn giá</th>
+                                <th>Thành tiền</th>
+                                <th></th>
                             </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in categoryGroup)
+                            {
+                                <tr>
+                                    <td>
+                                        @* form="buyForm": checkbox thuộc form Mua hàng dù nằm ngoài form đó *@
+                                        <input type="checkbox" class="chk-item" name="selectedIds" value="@item.ProductID" form="buyForm" checked
+                                               data-total="@item.TotalPrice.ToString(System.Globalization.CultureInfo.InvariantCulture)"
+                                               data-qty="@item.Quantity" />
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.ProductImage))
+                                        {
+                                            <img src="@Url.Content(item.ProductImage)" alt="@item.ProductName" style="max-height:80px" />
+                                        }
+                                    </td>
+                                    <td class="col-md-3">@item.ProductName</td>
+                                    <td>
+                                        <button type="button" style="width:20px" onclick="cartUpdateQuantity(@item.ProductID, @item.Quantity - 1)">-</button>
+                                        <input type="number" value="@item.Quantity" style="width:40px; text-align:right;" readonly />
+                                        <button type="button" style="width:20px" onclick="cartUpdateQuantity(@item.ProductID, @item.Quantity + 1)">+</button>
+                                    </td>
+                                    <td>@item.UnitPrice.ToString("N0")</td>
+                                    <td>@item.TotalPrice.ToString("N0")</td>
+                                    <td>
+                                        <a href="@Url.Action("RemoveFromCart", "Cart", new { id = item.ProductID })" title="Xóa khỏi giỏ">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
 
-                        }
-                    </tbody>
-                </table>
-            }
-
-        </div>
-
-        <div class="col-md-3 cart-section">
-            <div><strong>Tổng giá trị:&nbsp;<span style="color:red;">@Model.TotalValue().ToString("N0")</span></strong></div>
-            <div>@Html.ActionLink("Mua hàng", "Checkout", "Order", null, new { @class = "btn btn-danger cart-button" })</div>
+            <!-- PHẦN TÍNH TIỀN -->
+            <div class="col-md-3 cart-section">
+                <div>Đã chọn: <strong id="selectedCount">0</strong> sản phẩm</div>
+                <div>
+                    <strong>Tổng tiền:&nbsp;<span id="selectedTotal" style="color:red;">0</span> VNĐ</strong>
+                </div>
+                <form id="buyForm" action="@Url.Action("Checkout", "Order")" method="get" onsubmit="return checkSelected();">
+                    <button type="submit" class="btn btn-danger cart-button">Mua hàng</button>
+                </form>
+            </div>
         </div>
     }
 </div>
 <div class="col-md-12">@Html.ActionLink("Tiếp tục mua hàng", "Index", "Home", null, new { @class = "btn btn-warning cart-button" })</div>
 
+<!-- PHẦN SẢN PHẨM TƯƠNG TỰ -->
+@Html.Partial("_PVSimilarProduct", Model)
+
 @section Scripts {
-
     <script>
+        // Cập nhật số lượng (tối thiểu 1, tối đa 10 cho khớp trang Chi tiết sản phẩm)
         function cartUpdateQuantity(id, newQuantity) {
-    if (newQuantity < 1) return;       // tối thiểu 1
-    if (newQuantity > 10) return;      // ✅ tối đa 10 (khớp ProductDetail)
+            if (newQuantity < 1 || newQuantity > 10) return;
+            const form = document.createElement('form');
+            form.method = 'post';
+            form.action = '@Url.Action("UpdateQuantity", "Cart")';
+            form.innerHTML = '<input type="hidden" name="id" value="' + id + '" />' +
+                             '<input type="hidden" name="quantity" value="' + newQuantity + '" />';
+            document.body.appendChild(form);
+            form.submit();
+        }
 
-    const form = document.createElement('form');
-    form.method = 'post';
-    form.action = '@Url.Action("UpdateQuantity", "Cart")';
+        // Tính lại tiền theo các sản phẩm được tick
+        function recalc() {
+            let total = 0, count = 0;
+            document.querySelectorAll('.chk-item:checked').forEach(function (c) {
+                total += parseFloat(c.dataset.total);
+                count += parseInt(c.dataset.qty);
+            });
+            document.getElementById('selectedTotal').innerText = total.toLocaleString('vi-VN');
+            document.getElementById('selectedCount').innerText = count;
+            const all = document.querySelectorAll('.chk-item');
+            document.getElementById('chkAll').checked = all.length > 0 &&
+                document.querySelectorAll('.chk-item:checked').length === all.length;
+        }
 
-    const idInput = document.createElement('input');
-    idInput.type = 'hidden';
-    idInput.name = 'id';
-    idInput.value = id;
-    form.appendChild(idInput);
+        function checkSelected() {
+            if (document.querySelectorAll('.chk-item:checked').length === 0) {
+                alert('Vui lòng chọn ít nhất 1 sản phẩm để mua.');
+                return false;
+            }
+            return true;
+        }
 
-    const quantityInput = document.createElement('input');
-    quantityInput.type = 'hidden';
-    quantityInput.name = 'quantity';
-    quantityInput.value = newQuantity;
-    form.appendChild(quantityInput);
-
-    document.body.appendChild(form);
-    form.submit();
-}
+        const chkAll = document.getElementById('chkAll');
+        if (chkAll) {
+            chkAll.addEventListener('change', function () {
+                document.querySelectorAll('.chk-item').forEach(c => c.checked = chkAll.checked);
+                recalc();
+            });
+            document.querySelectorAll('.chk-item').forEach(c => c.addEventListener('change', recalc));
+            recalc();
+        }
     </script>
-
 }

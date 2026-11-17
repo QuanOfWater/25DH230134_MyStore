@@ -8,6 +8,10 @@
 @using (Html.BeginForm("Checkout", "Order", FormMethod.Post, new { @class = "row", role = "form" }))
 {
     @Html.AntiForgeryToken()
+    foreach (var item in Model.CartItems)
+    {
+        <input type="hidden" name="selectedIds" value="@item.ProductID" />
+    }
 
     <h3>Thông tin đơn hàng</h3>
     <div class="form-group">
@@ -56,19 +60,19 @@
     <div class="form-group">
         @Html.Label("Phương thức giao hàng", new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            @Html.RadioButtonFor(m => m.DeliveryMethod, "Giao hàng nhanh", new { @checked = "checked" }) Giao hàng nhanh<br />
-            @Html.RadioButtonFor(m => m.DeliveryMethod, "Giao hàng tiết kiệm") Giao hàng tiết kiệm<br />
-            @Html.ValidationMessageFor(m => m.DeliveryMethod)
+            @Html.RadioButtonFor(m => m.DeliveryMethod, "Giao trong ngày") Giao trong ngày (hỏa tốc)<br />
+            @Html.RadioButtonFor(m => m.DeliveryMethod, "Giao theo giờ hẹn") Giao theo giờ hẹn<br />
+            @Html.ValidationMessageFor(m => m.DeliveryMethod, "", new { @class = "text-danger" })
         </div>
     </div>
 
-    <div class="form-control">
+    <div class="form-group">
         @Html.Label("Phương thức thanh toán", new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            @Html.RadioButtonFor(m => m.PaymentMethod, "Tiền mặt", new { @checked = "checked" }) Tiền mặt<br />
-            @Html.RadioButtonFor(m => m.PaymentMethod, "Paypal") Paypal<br />
-            @Html.RadioButtonFor(m => m.PaymentMethod, "Mua trước trả sau") Mua trước trả sau<br />
-            @Html.ValidationMessageFor(m => m.PaymentMethod)
+            @Html.RadioButtonFor(m => m.PaymentMethod, "Tiền mặt") Thanh toán khi nhận hoa (COD)<br />
+            @Html.RadioButtonFor(m => m.PaymentMethod, "Chuyển khoản") Chuyển khoản ngân hàng<br />
+            @Html.RadioButtonFor(m => m.PaymentMethod, "Ví điện tử") Ví MoMo / ZaloPay<br />
+            @Html.ValidationMessageFor(m => m.PaymentMethod, "", new { @class = "text-danger" })
         </div>
     </div>
 

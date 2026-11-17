@@ -1,51 +1,25 @@
 ﻿@model _25DH230134_MyStore.Models.User
-
 @{
-    ViewBag.Title = "Edit";
+    ViewBag.Title = "Đổi mật khẩu Admin";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h2>Edit</h2>
-
-
-@using (Html.BeginForm())
+<h2>ĐỔI MẬT KHẨU: @Model.Username</h2>
+<hr />
+@using (Html.BeginForm("Edit", "Users", new { id = Model.Username }, FormMethod.Post))
 {
     @Html.AntiForgeryToken()
+    @Html.ValidationSummary(false, "", new { @class = "text-danger" })
 
-    <div class="form-horizontal">
-        <h4>User</h4>
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(model => model.Username)
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Password, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.UserRole, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.UserRole, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.UserRole, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-default" />
-            </div>
-        </div>
+    <div class="mb-3" style="max-width:400px;">
+        <label class="form-label">Mật khẩu mới</label>
+        <input type="password" name="newPassword" class="form-control" />
     </div>
-}
+    <div class="mb-3" style="max-width:400px;">
+        <label class="form-label">Nhập lại mật khẩu mới</label>
+        <input type="password" name="confirmPassword" class="form-control" />
+    </div>
 
-<div>
-    @Html.ActionLink("Back to List", "Index")
-</div>
-
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
+    <input type="submit" value="Lưu" class="btn btn-primary" />
+    @Html.ActionLink("Quay lại", "Index", null, new { @class = "btn btn-secondary" })
 }

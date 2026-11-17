@@ -1,0 +1,30 @@
+﻿@model _25DH230134_MyStore.Models.ViewModel.PersonalMenuVM
+
+<!-- Menu Tài khoản (dùng lại CSS dropdown của menu Danh mục) -->
+<li class="category-dropdown">
+    <a href="#">
+        <i class="fas fa-user"></i>
+        @(Model.IsLoggedIn ? "Hello, " + Model.Username : "Tài khoản")
+        <i class="fas fa-caret-down" style="font-size:11px;"></i>
+    </a>
+    <ul class="category-list">
+        @if (Model.IsLoggedIn)
+        {
+            <li><a href="@Url.Action("UserProfile", "Account")">Thông tin tài khoản</a></li>
+            <li><a href="@Url.Action("Logout", "Account")">Đăng xuất</a></li>
+        }
+        else
+        {
+            <li><a href="@Url.Action("Register", "Account")">Đăng ký</a></li>
+            <li><a href="@Url.Action("Login", "Account")">Đăng nhập</a></li>
+        }
+    </ul>
+</li>
+
+<!-- Giỏ hàng + số lượng -->
+<li class="cart">
+    <a href="@Url.Action("Index", "Cart")">
+        <i class="fas fa-shopping-cart"></i> Giỏ hàng
+        <span class="cart-count">@Model.CartCount</span>
+    </a>
+</li>

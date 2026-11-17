@@ -1,4 +1,8 @@
-﻿using System;
+﻿using _25DH230134_MyStore.Areas.Admin.Filters;
+using _25DH230134_MyStore.Models;
+using _25DH230134_MyStore.Models.ViewModel;
+using PagedList;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
@@ -7,14 +11,12 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using _25DH230134_MyStore.Models;
-using _25DH230134_MyStore.Models.ViewModel;
-using PagedList;
 
 
 
 namespace _25DH230134_MyStore.Areas.Admin.Controllers
 {
+    [AdminAuthorize]
     public class ProductsController : Controller
     {
         private MyStoreEntities db = new MyStoreEntities();
@@ -31,7 +33,7 @@ namespace _25DH230134_MyStore.Areas.Admin.Controllers
             if (!string.IsNullOrEmpty(SearchTerm)) //Nếu SearchTerm không null
             {
                 model.SearchTerm = SearchTerm;
-                //Tìm kiếm sản phẩm dựa trên SearchTerm có nằm trong Produc
+                //Tìm kiếm sản phẩm dựa trên SearchTerm có nằm trong Product
                 products = products.Where(p => //Đây là lambda, là một hàm ẩn danh dùng khi không cần phải định danh riêng và dùng trong thời gian ngắn
                  p.ProductName.Contains(SearchTerm) ||
                  p.ProductDescription.Contains(SearchTerm) ||
@@ -64,7 +66,7 @@ namespace _25DH230134_MyStore.Areas.Admin.Controllers
             //Đoạn code liên quan tới phân trang
             //Lấy số trang hiện tại (mặc định là trang 1 nếu không có giá trị)
             int pageNumber = page ?? 1;
-            int pageSize = 2;//Số sản phẩm mỗi trang
+            int pageSize = 10;//Số sản phẩm mỗi trang
 
             //đóng câu lệnh này, sử dụng ToPagedList để lấy phân trang
             //model.Products = products.ToList();
@@ -105,11 +107,6 @@ namespace _25DH230134_MyStore.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "ProductID,CategoryID,ProductName,ProductPrice,ProductImage,ProductDescription, UploadImage")] Product product)
         {
-            if (product.UploadImage == null)
-            {
-                return Content("LỖI: Không nhận được file từ View!");
-            }
-
             if (ModelState.IsValid)
             {
                 if (product.UploadImage != null)

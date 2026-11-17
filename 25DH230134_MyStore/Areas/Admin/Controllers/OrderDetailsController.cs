@@ -1,4 +1,6 @@
-﻿using System;
+﻿using _25DH230134_MyStore.Areas.Admin.Filters;
+using _25DH230134_MyStore.Models;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
@@ -6,10 +8,10 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using _25DH230134_MyStore.Models;
 
 namespace _25DH230134_MyStore.Areas.Admin.Controllers
 {
+    [AdminAuthorize]
     public class OrderDetailsController : Controller
     {
         private MyStoreEntities db = new MyStoreEntities();

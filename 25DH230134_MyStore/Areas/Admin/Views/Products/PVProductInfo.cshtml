@@ -1,0 +1,39 @@
+﻿@model _25DH230134_MyStore.Models.Product
+<style>
+    .pv-product-img {
+        height: 250px;
+        max-width: 250px;
+        object-fit: contain;
+    }
+</style>
+
+<div class="container-fluid">
+    <hr />
+    <div class="row">
+        <div class="col-md-4">
+            @if (!string.IsNullOrEmpty(Model.ProductImage))
+            {
+                <img src="@Url.Content(Model.ProductImage)" class="pv-product-img" alt="@Model.ProductName" />
+            }
+            else
+            {
+                <p>Không có ảnh</p>
+            }
+        </div>
+        <div class="col-md-8">
+            <dl>
+                <dt>TÊN SẢN PHẨM</dt>
+                <dd>@Html.DisplayFor(model => model.ProductName)</dd>
+
+                <dt>ĐƠN GIÁ</dt>
+                <dd>@Model.ProductPrice.ToString("N0") ₫</dd>
+
+                <dt>MÔ TẢ</dt>
+                <dd>@Html.DisplayFor(model => model.ProductDescription)</dd>
+
+                <dt>DANH MỤC</dt>
+                <dd>@(Model.Category != null ? Model.Category.CategoryName : "")</dd>
+            </dl>
+        </div>
+    </div>
+</div>

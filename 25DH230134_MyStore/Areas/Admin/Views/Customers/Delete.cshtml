@@ -1,66 +1,36 @@
 ﻿@model _25DH230134_MyStore.Models.Customer
-
 @{
-    ViewBag.Title = "Delete";
+    ViewBag.Title = "Xóa khách hàng";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h2>Delete</h2>
+<h2>XÓA KHÁCH HÀNG</h2>
+@if (Model.Orders.Any())
+{
+    <div class="alert alert-warning">Khách hàng này đã có @Model.Orders.Count đơn hàng nên <strong>không thể xóa</strong>.</div>
+}
+else
+{
+    <h4 class="text-danger">Bạn có chắc muốn xóa khách hàng này (kèm tài khoản đăng nhập)?</h4>
+}
+<hr />
+<dl class="row">
+    <dt class="col-sm-3">Họ tên</dt>
+    <dd class="col-sm-9">@Model.CustomerName</dd>
+    <dt class="col-sm-3">Số điện thoại</dt>
+    <dd class="col-sm-9">@Model.CustomerPhone</dd>
+    <dt class="col-sm-3">Email</dt>
+    <dd class="col-sm-9">@Model.CustomerEmail</dd>
+    <dt class="col-sm-3">Tên đăng nhập</dt>
+    <dd class="col-sm-9">@Model.Username</dd>
+</dl>
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>Customer</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.CustomerName)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.CustomerName)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.CustomerPhone)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.CustomerPhone)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.CustomerEmail)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.CustomerEmail)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.CustomerAddress)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.CustomerAddress)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.User.Password)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.User.Password)
-        </dd>
-
-    </dl>
-
-    @using (Html.BeginForm())
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    if (!Model.Orders.Any())
     {
-        @Html.AntiForgeryToken()
-
-        <div class="form-actions no-color">
-            <input type="submit" value="Delete" class="btn btn-default" /> |
-            @Html.ActionLink("Back to List", "Index")
-        </div>
+        <input type="submit" value="Xác nhận xóa" class="btn btn-danger" />
     }
-</div>
+    @Html.ActionLink("Quay lại danh sách", "Index", null, new { @class = "btn btn-secondary" })
+}

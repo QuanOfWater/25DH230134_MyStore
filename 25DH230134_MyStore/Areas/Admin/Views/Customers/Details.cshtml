@@ -1,59 +1,59 @@
 ﻿@model _25DH230134_MyStore.Models.Customer
-
 @{
-    ViewBag.Title = "Details";
+    ViewBag.Title = "Chi tiết khách hàng";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h2>Details</h2>
+<h2>THÔNG TIN KHÁCH HÀNG</h2>
+<hr />
+<dl class="row">
+    <dt class="col-sm-3">Họ tên</dt>
+    <dd class="col-sm-9">@Model.CustomerName</dd>
+    <dt class="col-sm-3">Số điện thoại</dt>
+    <dd class="col-sm-9">@Model.CustomerPhone</dd>
+    <dt class="col-sm-3">Email</dt>
+    <dd class="col-sm-9">@Model.CustomerEmail</dd>
+    <dt class="col-sm-3">Địa chỉ</dt>
+    <dd class="col-sm-9">@Model.CustomerAddress</dd>
+    <dt class="col-sm-3">Tên đăng nhập</dt>
+    <dd class="col-sm-9">@Model.Username</dd>
+</dl>
 
-<div>
-    <h4>Customer</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.CustomerName)
-        </dt>
+<h4>Đơn hàng của khách (@Model.Orders.Count đơn)</h4>
+@if (!Model.Orders.Any())
+{
+    <p>Khách hàng này chưa có đơn hàng nào.</p>
+}
+else
+{
+    <table class="table table-bordered">
+        <thead class="table-success">
+            <tr>
+                <th>Mã đơn</th>
+                <th>Ngày đặt</th>
+                <th>Tổng tiền</th>
+                <th>Thanh toán</th>
+                <th>Trạng thái</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var o in Model.Orders.OrderByDescending(x => x.OrderDate))
+            {
+                <tr>
+                    <td>#@o.OrderID</td>
+                    <td>@o.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td style="color:red;">@o.TotalAmount.ToString("N0") ₫</td>
+                    <td>@o.PaymentStatus</td>
+                    <td>@o.OrderStatus</td>
+                    <td>@Html.ActionLink("Chi tiết đơn", "DetailedOrder", "Orders", new { id = o.OrderID }, new { @class = "btn btn-info btn-sm" })</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
 
-        <dd>
-            @Html.DisplayFor(model => model.CustomerName)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.CustomerPhone)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.CustomerPhone)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.CustomerEmail)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.CustomerEmail)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.CustomerAddress)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.CustomerAddress)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.User.Password)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.User.Password)
-        </dd>
-
-    </dl>
-</div>
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.CustomerID }) |
-    @Html.ActionLink("Back to List", "Index")
+    @Html.ActionLink("Sửa", "Edit", new { id = Model.CustomerID }, new { @class = "btn btn-primary" })
+    @Html.ActionLink("Quay lại danh sách", "Index", null, new { @class = "btn btn-secondary" })
 </p>

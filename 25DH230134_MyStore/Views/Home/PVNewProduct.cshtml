@@ -2,7 +2,7 @@
 @model _25DH230134_MyStore.Models.ViewModel.HomeProductVM
 @using PagedList.Mvc
 
-<link rel="stylesheet" type="text/css" href="~/Content/Home/CustomerHome.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/CustomerHome.css" />
 
 <!-- Hiển thị danh sách sản phẩm -->
 @if (Model.NewProducts != null && Model.NewProducts.Any())
@@ -18,7 +18,9 @@
                             <img src="@Url.Content(product.ProductImage)" />
                         </a>
                     </div>
-                    <p class="prodPrice">@Html.DisplayFor(modelItem => product.ProductPrice)</p>
+                    <p class="prodPrice">
+                        @String.Format("{0:N0} VNĐ", product.ProductPrice)
+                    </p>
                     <p class="prodName">@Html.DisplayFor(modelItem => product.ProductName) </p>
                     <p class="prodSale">
                         Đã bán:&nbsp;@Html.DisplayFor(modelItem => product.OrderDetails.Count)

@@ -2,10 +2,9 @@
 using _25DH230134_MyStore.Models.ViewModel;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity; // THÊM: để dùng Include("OrderDetails") trong OrderSuccess
+using System.Data.Entity;
 using System.Linq;
 using System.Web;
-using System.Web.ModelBinding;
 using System.Web.Mvc;
 
 namespace _25DH230134_MyStore.Controllers
@@ -13,129 +12,128 @@ namespace _25DH230134_MyStore.Controllers
     public class OrderController : Controller
     {
         private MyStoreEntities db = new MyStoreEntities();
-        // GET: Order
-        public ActionResult Index()
+
+        // Lấy các sản phẩm được tick chọn trong giỏ (không truyền selectedIds = lấy cả giỏ)
+        private List<CartItem> GetSelectedItems(int[] selectedIds)
         {
-            return View();
+            var cart = Session["Cart"] as Cart;
+            if (cart == null) return new List<CartItem>();
+            var items = cart.Items.ToList();
+            if (selectedIds != null && selectedIds.Length > 0)
+            {
+                items = items.Where(i => selectedIds.Contains(i.ProductID)).ToList();
+            }
+            return items;
         }
 
-        //GET: Order/CheckOut
+        //GET: Order/Checkout
         [Authorize]
-        public ActionResult Checkout()
+        public ActionResult Checkout(int[] selectedIds)
         {
-            //Kiểm tra giỏ hàng trong session
-            //Nếu giỏ hàng rỗng hoặc không có sản phẩm thì chuyển về trang chủ
-            // SỬA: Session lưu object Cart (do CartService), không phải List<CartItem> nên phải lấy Cart ra rồi lấy Items
-            var cart = (Session["Cart"] as Cart)?.Items.ToList();
-            if (cart == null || !cart.Any())
+            var items = GetSelectedItems(selectedIds);
+            if (!items.Any())
             {
-                // THÊM: gửi thông báo về trang chủ bằng TempData (ViewBag sẽ mất khi redirect)
                 TempData["ErrorMessage"] = "Giỏ hàng của bạn đang trống, vui lòng thêm sản phẩm trước khi đặt hàng!";
                 return RedirectToAction("Index", "Home");
             }
 
-            //Xác thực người dùng đã đăng nhập chưa, nếu chưa thì chuyển hướng tới trang Đăng nhập
-            var user = db.Users.SingleOrDefault(u => u.Username == User.Identity.Name);
-            if (user == null) { return RedirectToAction("Login", "Account"); }
-            //Lấy thông tin khách hàng từ CSDL, nếu chưa có thì chuyển hướng tới trang Đăng nhập
-            //Nếu có rồi thì lấy địa chỉ của kahcsh hàng và gán vào ShippingAddress của CheckoutVM
-            var customer = db.Customers.SingleOrDefault(c => c.Username == user.Username);
+            //Lấy thông tin khách hàng đang đăng nhập
+            var customer = db.Customers.SingleOrDefault(c => c.Username == User.Identity.Name);
             if (customer == null) { return RedirectToAction("Login", "Account"); }
 
-            var model = new CheckoutVM //Tạo dữ liệu hiển thị cho CheckoutVM
+            var model = new CheckoutVM
             {
-                CartItems = cart, //Lấy danh sách các sản phẩm trong giỏ hàng
-                TotalAmount = cart.Sum(item => item.TotalPrice),//Tổng giá trị của các mặt hàng trong giỏ
+                CartItems = items,
+                TotalAmount = items.Sum(i => i.TotalPrice),
                 CustomerName = customer.CustomerName,
                 CustomerPhone = customer.CustomerPhone,
-                ShippingAddress = customer.CustomerAddress,//Lấy địa chỉ mặc định từ bảng Customer
-                DeliveryMethod = "Giao hàng nhanh", // chọn sẵn radio phương thức giao hàng
-                PaymentMethod = "Tiền mặt" // chọn sẵn radio phương thức thanh toán
+                ShippingAddress = customer.CustomerAddress, //Địa chỉ mặc định lấy từ bảng Customer
+                DeliveryMethod = "Giao trong ngày",
+                PaymentMethod = "Tiền mặt"
             };
-
             return View(model);
         }
 
+        //POST: Order/Checkout
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public ActionResult Checkout(CheckoutVM model)
+        public ActionResult Checkout(CheckoutVM model, int[] selectedIds)
         {
-            // THÊM: đưa việc lấy giỏ hàng ra ngoài if để dùng được cả ở cuối hàm khi form bị lỗi
-            // SỬA: Session lưu object Cart, không phải List<CartItem>
-            var cart = (Session["Cart"] as Cart)?.Items.ToList();
-
-            if (ModelState.IsValid)
+            var items = GetSelectedItems(selectedIds);
+            if (!items.Any())
             {
-                //Nếu giỏ hàng rỗng sẽ điều hướng tới trang home
-                // SỬA: kiểm tra thêm !cart.Any() cho giống action GET
-                if (cart == null || !cart.Any())
-                {
-                    // THÊM: gửi thông báo về trang chủ bằng TempData (ViewBag sẽ mất khi redirect)
-                    TempData["ErrorMessage"] = "Giỏ hàng của bạn đang trống, vui lòng thêm sản phẩm trước khi đặt hàng!";
-                    return RedirectToAction("Index", "Home");
-                }
-
-                // SỬA: lấy user từ tài khoản đang đăng nhập, vì form không gửi Username lên nên model.Username bị null
-                var user = db.Users.SingleOrDefault(u => u.Username == User.Identity.Name);
-                //Nếu người dùng chưa đăng nhập sẽ điều hướng tới trang Login
-                if (user == null)
-                {
-                    return RedirectToAction("Login", "Account");
-                }
-                //Nếu khách hàng không khớp với tên đăng nhập, sẽ điều hướng tới trang Login
-                var customer = db.Customers.SingleOrDefault(c => c.Username == user.Username);
-                if (customer == null) { return RedirectToAction("Login", "Account"); }
-
-                //Nếu người dùng chọn thanh toán bằng Paypal, sẽ điều hướng tới trang PaymentWithPaypal
-                if (model.PaymentMethod == "Paypal")
-                {
-                    return RedirectToAction("PaymentWithPaypal", "PayPal", model);
-                }
-                //Thiết lập paymentStatus dựa trên Payment Method
-                string paymentStatus = "Chưa thanh toán";
-                switch (model.PaymentMethod)
-                {
-                    case "Tiền mặt": paymentStatus = "Thanh toán tiền mặt"; break;
-                    //case "Paypal": paymentStatus = "Thanh toán bằng Paypal";break;
-                    case "Mua trước trả sau": paymentStatus = "Trả góp"; break;
-                    default: paymentStatus = "Chưa thanh toán"; break;
-                }
-
-                //Tạo đơn hàng và chi tiết đơn hàng liên quan
-                var order = new Order
-                {
-                    CustomerID = customer.CustomerID,
-                    OrderDate = DateTime.Now, // SỬA: form không gửi OrderDate lên nên model.OrderDate = 01/01/0001, gây lỗi SQL
-                    TotalAmount = cart.Sum(item => item.TotalPrice), // SỬA: tính lại từ giỏ hàng, vì form không gửi giá trị này lên
-                    PaymentStatus = paymentStatus,
-                    PaymentMethod = model.PaymentMethod,
-                    DeliveryMethod = model.DeliveryMethod,
-                    ShippingAddress = model.ShippingAddress,
-                    OrderDetails = cart.Select(item => new OrderDetail
-                    {
-                        ProductID = item.ProductID,
-                        Quantity = item.Quantity,
-                        UnitPrice = item.UnitPrice,
-                        TotalPrice = item.TotalPrice
-                    }).ToList()
-                };
-                //Lưu đơn hàng vào CSDL
-                db.Orders.Add(order);
-                db.SaveChanges();
-                //Xóa giỏ hàng sau khi đặt hàng thành công
-                Session["Cart"] = null;
-                //Điều hướng tới trang xác nhạn đơn hàng
-                return RedirectToAction("OrderSuccess", new { id = order.OrderID });
+                TempData["ErrorMessage"] = "Giỏ hàng của bạn đang trống, vui lòng thêm sản phẩm trước khi đặt hàng!";
+                return RedirectToAction("Index", "Home");
             }
-            model.CartItems = cart; // THÊM: nạp lại danh sách sản phẩm, vì form không gửi CartItems lên, nếu thiếu thì view bị lỗi khi hiển thị lại
-            return View(model);
+
+            var customer = db.Customers.SingleOrDefault(c => c.Username == User.Identity.Name);
+            if (customer == null) { return RedirectToAction("Login", "Account"); }
+
+            if (!ModelState.IsValid)
+            {
+                //Form bị lỗi: nạp lại dữ liệu hiển thị rồi trả về form
+                model.CartItems = items;
+                model.TotalAmount = items.Sum(i => i.TotalPrice);
+                model.CustomerName = customer.CustomerName;
+                model.CustomerPhone = customer.CustomerPhone;
+                return View(model);
+            }
+
+            //Trạng thái thanh toán dựa trên phương thức thanh toán
+            //Trạng thái thanh toán dựa trên phương thức thanh toán
+            string paymentStatus;
+            switch (model.PaymentMethod)
+            {
+                case "Tiền mặt": paymentStatus = "Thanh toán khi nhận hàng"; break;
+                case "Chuyển khoản": paymentStatus = "Chờ chuyển khoản"; break;
+                case "Ví điện tử": paymentStatus = "Chờ thanh toán qua ví"; break;
+                default: paymentStatus = "Chưa thanh toán"; break;
+            }
+
+            //Trạng thái đơn hàng: trả tiền mặt thì xử lý luôn, còn lại thì chờ thanh toán
+            string orderStatus = model.PaymentMethod == "Tiền mặt" ? "Đang xử lý" : "Chờ thanh toán";
+
+            var order = new Order
+            {
+                CustomerID = customer.CustomerID,
+                OrderDate = DateTime.Now,
+                TotalAmount = items.Sum(i => i.TotalPrice),
+                PaymentStatus = paymentStatus,
+                PaymentMethod = model.PaymentMethod,
+                DeliveryMethod = model.DeliveryMethod,
+                ShippingAddress = model.ShippingAddress,
+                OrderStatus = orderStatus,
+                //TotalPrice của OrderDetail do SQL tự tính (Quantity * UnitPrice)
+                OrderDetails = items.Select(i => new OrderDetail
+                {
+                    ProductID = i.ProductID,
+                    Quantity = i.Quantity,
+                    UnitPrice = i.UnitPrice
+                }).ToList()
+            };
+            db.Orders.Add(order);
+            db.SaveChanges();
+
+            //Chỉ xóa khỏi giỏ những sản phẩm đã mua, sản phẩm không tick vẫn giữ lại
+            var cart = Session["Cart"] as Cart;
+            if (cart != null)
+            {
+                foreach (var i in items)
+                {
+                    cart.RemoveItem(i.ProductID);
+                }
+                if (!cart.Items.Any()) Session["Cart"] = null;
+            }
+
+            return RedirectToAction("OrderSuccess", new { id = order.OrderID });
         }
 
-        // THÊM: action OrderSuccess (slide 46), nếu thiếu thì đặt hàng xong sẽ bị 404
+        //GET: Order/OrderSuccess/5 - Xác nhận đơn hàng
+        [Authorize]
         public ActionResult OrderSuccess(int id)
         {
-            var order = db.Orders.Include("OrderDetails").SingleOrDefault(o => o.OrderID == id);
+            var order = db.Orders.Include("OrderDetails.Product").SingleOrDefault(o => o.OrderID == id);
             if (order == null)
             {
                 return HttpNotFound();
@@ -143,38 +141,10 @@ namespace _25DH230134_MyStore.Controllers
             return View(order);
         }
 
-        // THÊM: trang Đơn hàng của tôi (slide 48), chỉ hiện đơn của khách đang đăng nhập
-        [Authorize]
-        public ActionResult MyOrder(string searchTerm, string status)
+        protected override void Dispose(bool disposing)
         {
-            var customer = db.Customers.SingleOrDefault(c => c.Username == User.Identity.Name);
-            if (customer == null) { return RedirectToAction("Login", "Account"); }
-
-            // Lấy đơn của khách này, kèm chi tiết đơn và sản phẩm để hiện tên, ảnh
-            var orders = db.Orders.Include("OrderDetails.Product")
-                                  .Where(o => o.CustomerID == customer.CustomerID);
-
-            // Lọc theo tab trạng thái (để trống = Tất cả)
-            if (!string.IsNullOrEmpty(status))
-            {
-                orders = orders.Where(o => o.PaymentStatus == status);
-            }
-
-            // Tìm theo mã đơn hàng hoặc tên sản phẩm
-            if (!string.IsNullOrEmpty(searchTerm))
-            {
-                int orderId;
-                bool isNumber = int.TryParse(searchTerm, out orderId);
-                orders = orders.Where(o => (isNumber && o.OrderID == orderId)
-                                           || o.OrderDetails.Any(d => d.Product.ProductName.Contains(searchTerm)));
-            }
-
-            // Giữ lại giá trị để view tô sáng tab và điền lại ô tìm kiếm
-            ViewBag.Status = status;
-            ViewBag.SearchTerm = searchTerm;
-
-            return View(orders.OrderByDescending(o => o.OrderDate).ToList());
+            if (disposing) db.Dispose();
+            base.Dispose(disposing);
         }
-
     }
 }

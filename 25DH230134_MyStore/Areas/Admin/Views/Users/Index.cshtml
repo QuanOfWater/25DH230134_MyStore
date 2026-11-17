@@ -1,48 +1,69 @@
-﻿@model IEnumerable<_25DH230134_MyStore.Models.User>
-
+﻿@model PagedList.IPagedList<_25DH230134_MyStore.Models.User>
+@using PagedList.Mvc
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Tài khoản Admin";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
+<link rel="stylesheet" href="~/Content/PagedList.css" />
 
-<h2>Index</h2>
+<h2>TÀI KHOẢN ADMIN</h2>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
-    <tr>
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
 
-        <th>
-            @Html.DisplayNameFor(model => model.Username)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Password)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.UserRole)
-        </th>
-        <th></th>
-    </tr>
+@using (Html.BeginForm("Index", "Users", FormMethod.Get, new { @class = "d-flex gap-2 mb-3" }))
+{
+    <input type="text" name="searchTerm" value="@ViewBag.SearchTerm" class="form-control" style="max-width:350px;" placeholder="Tìm theo tên đăng nhập" />
+    <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+    @Html.ActionLink("Xóa lọc", "Index", null, new { @class = "btn btn-outline-secondary" })
+}
 
-    @foreach (var item in Model)
-    {
-        <tr>
-            <th>
-                @Html.DisplayFor(model => item.Username)
-            </th>
-            <td>
-                @Html.DisplayFor(modelItem => item.Password)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UserRole)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.Username }) |
-                @Html.ActionLink("Details", "Details", new { id = item.Username }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.Username })
-            </td>
-        </tr>
-    }
+@if (!Model.Any())
+{
+    <div class="alert alert-warning text-center"><strong>KHÔNG CÓ</strong></div>
+}
+else
+{
+    <table class="table table-bordered table-hover">
+        <thead class="table-success">
+            <tr>
+                <th>Tên đăng nhập</th>
+                <th>Quyền</th>
+                <th style="width:250px;"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @item.Username
+                        @if (item.Username == (Session["AdminUser"] as string))
+                        {
+                            <span class="badge bg-success">Đang đăng nhập</span>
+                        }
+                    </td>
+                    <td>Admin</td>
+                    <td>
+                        @Html.ActionLink("Chi tiết", "Details", new { id = item.Username }, new { @class = "btn btn-info btn-sm" })
+                        @Html.ActionLink("Đổi mật khẩu", "Edit", new { id = item.Username }, new { @class = "btn btn-primary btn-sm" })
+                        @Html.ActionLink("Xóa", "Delete", new { id = item.Username }, new { @class = "btn btn-danger btn-sm" })
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 
-</table>
+    <div>
+        Trang @Model.PageNumber / @Model.PageCount
+        @Html.PagedListPager(Model, page => Url.Action("Index", new { page, searchTerm = ViewBag.SearchTerm }))
+    </div>
+}
+
+<p>@Html.ActionLink("THÊM TÀI KHOẢN ADMIN", "Create", null, new { @class = "btn btn-success" })</p>

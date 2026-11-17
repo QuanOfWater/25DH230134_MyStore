@@ -1,0 +1,36 @@
+﻿@model _25DH230134_MyStore.Models.Order
+@{
+    ViewBag.Title = "Cập nhật trạng thái";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>CẬP NHẬT TRẠNG THÁI ĐƠN HÀNG #@Model.OrderID</h2>
+<p>
+    Khách hàng: <strong>@(Model.Customer != null ? Model.Customer.CustomerName : "N/A")</strong>
+    &nbsp;|&nbsp; Ngày đặt: @Model.OrderDate.ToString("dd/MM/yyyy HH:mm")
+    &nbsp;|&nbsp; Tổng tiền: <strong style="color:red">@Model.TotalAmount.ToString("N0") ₫</strong>
+</p>
+<hr />
+
+@using (Html.BeginForm("UpdateStatus", "Orders", new { id = Model.OrderID }, FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+<div class="mb-3" style="max-width:400px;">
+    <label class="form-label">Trạng thái đơn hàng</label>
+    @Html.DropDownList("orderStatus",
+        new SelectList(_25DH230134_MyStore.Models.ViewModel.OrderSearchVM.OrderStatusOptions, Model.OrderStatus),
+        new { @class = "form-select" })
+</div>
+
+    <div class="mb-3" style="max-width:400px;">
+        <label class="form-label">Trạng thái thanh toán</label>
+        @Html.DropDownList("paymentStatus",
+            new SelectList(_25DH230134_MyStore.Models.ViewModel.OrderSearchVM.PaymentStatusOptions, Model.PaymentStatus),
+            new { @class = "form-select" })
+    </div>
+
+    <button type="submit" class="btn btn-primary">Lưu</button>
+    @Html.ActionLink("Hủy", "DetailedOrder", new { id = Model.OrderID }, new { @class = "btn btn-secondary" })
+}

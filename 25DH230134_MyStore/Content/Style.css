@@ -9,12 +9,12 @@
     border: 1px groove #ffffff;
     border-radius: 10px;
     margin: 10px;
-    padding: 10px; /* Thêm padding cho đẹp */
+    padding: 10px;
 }
 
     .pro-section img {
         max-height: 250px;
-        max-width: 100%; /* Sửa lại để ảnh không bị tràn */
+        max-width: 100%;
         padding: 5px;
     }
 

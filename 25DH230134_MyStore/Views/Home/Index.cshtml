@@ -6,28 +6,33 @@
 }
 
 <!-- NHÚNG FILE CSS TỪ BÊN NGOÀI (Giống bài giảng) -->
-<link rel="stylesheet" type="text/css" href="~/Content/Home/CustomerHome.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/CustomerHome.css" />
 
 <!-- 1. Đẩy nội dung vào vùng MENU của Layout -->
 @section Menu {
-    <h3>Danh mục sách</h3>
-    <select class="form-control" style="width: 100%; padding: 5px;">
-        <option>OPTION 1</option>
-        <option>OPTION 2</option>
-        <option>OPTION 3</option>
-    </select>
+    <h3>Danh mục hoa</h3>
+    @{
+        var db = new _25DH230134_MyStore.Models.MyStoreEntities();
+        var categories = db.Categories.ToList();
+    }
+    <ul style="list-style:none; padding:0;">
+        @foreach (var c in categories)
+        {
+            <li style="padding:5px 0;">
+                @Html.ActionLink(c.CategoryName, "ProductList", "Home", new { categoryId = c.CategoryID }, null)
+            </li>
+        }
+    </ul>
 }
 
 <!-- 2. Đẩy nội dung vào vùng BANNER của Layout -->
-@section Banner {
+@*@section Banner {
     <div class="banner">
         <div class="banner-container">
-            <h2>Chào mừng đến với Trang web Sách online</h2>
-            <p>Thư viện sách trực tuyến với hàng ngàn đầu sách chất lượng.</p>
-            <a href="#" class="btnBanner">Bắt đầu mua sắm</a>
+            <a href="#search-input" class="btnBanner">Bắt đầu mua sắm</a>
         </div>
     </div>
-}
+}*@
 
 <!-- 3. NỘI DUNG CHÍNH (Nằm trong vùng .content của Layout) -->
 <section class="search-section">
